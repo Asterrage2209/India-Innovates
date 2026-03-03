@@ -1,0 +1,18 @@
+What I need from you now
+To actually train and use the real models (no synthetic behavior):
+Malware dataset: Place your three real matrices (API, DLL, PE) somewhere locally and set:
+MALWARE_API_CALLS_PATH
+MALWARE_DLL_IMPORTS_PATH
+MALWARE_PE_HEADER_PATH
+Then run:
+  cd "d:\Programs\Projects\india innovates"
+  python -m cyber_ai.malware_detection.malware_model
+  cd "d:\Programs\Projects\india innovates"  python -m cyber_ai.malware_detection.malware_model
+Encrypted traffic dataset: Download the Encrypted Traffic Feature Dataset for Machine Learning and Deep Learning based Encrypted Traffic Analysis from Mendeley (10.17632/xw7r4tt54g.1), pick the appropriate CSV (packet or session level), and set:
+ENCRYPTED_TRAFFIC_CSV_PATH → that CSV path
+(and ENCRYPTED_LABEL_COLUMN if the label column isn’t label)
+Then run:
+  cd "d:\Programs\Projects\india innovates"
+  python -m cyber_ai.firewall.encrypted_cnn
+  cd "d:\Programs\Projects\india innovates"  python -m cyber_ai.firewall.encrypted_cnn
+Once you’ve downloaded those datasets and set the env vars, tell me and I’ll proceed to implement the next modules (plaintext_classifier, url_detector, VirusTotal integration, Suricata parser, zero trust, incident response, risk engine, and the Streamlit dashboard) and wire everything together in main.py.
