@@ -1,4 +1,4 @@
-<![CDATA[<h1 align="center">🛡️ CyberAI — AI-Powered Cyber Security System</h1>
+<h1 align="center">🛡️ CyberAI — AI-Powered Cyber Security System</h1>
 
 <p align="center">
   <b>A comprehensive, end-to-end security operations platform built in Python</b><br>
@@ -6,10 +6,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-3.11+-blue?style=flat-square&logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/python-3.11+-blue?style=flat-square&amp;logo=python" alt="Python">
   <img src="https://img.shields.io/badge/ML-scikit--learn-orange?style=flat-square" alt="scikit-learn">
-  <img src="https://img.shields.io/badge/DL-PyTorch-red?style=flat-square&logo=pytorch" alt="PyTorch">
-  <img src="https://img.shields.io/badge/dashboard-Streamlit-ff4b4b?style=flat-square&logo=streamlit" alt="Streamlit">
+  <img src="https://img.shields.io/badge/DL-PyTorch-red?style=flat-square&amp;logo=pytorch" alt="PyTorch">
+  <img src="https://img.shields.io/badge/dashboard-Streamlit-ff4b4b?style=flat-square&amp;logo=streamlit" alt="Streamlit">
   <img src="https://img.shields.io/badge/IDS-Suricata-yellow?style=flat-square" alt="Suricata">
   <img src="https://img.shields.io/badge/API-VirusTotal-394eff?style=flat-square" alt="VirusTotal">
 </p>
@@ -21,7 +21,7 @@
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Real Data Sources](#real-data-sources)
-- [Installation & Setup](#installation--setup)
+- [Installation and Setup](#installation-and-setup)
 - [Quick Start](#quick-start)
 - [Module Reference](#module-reference)
   - [Malware Detection](#1-malware-detection)
@@ -99,20 +99,20 @@ CyberAI is a **one-stop security operations center (SOC)** that combines machine
 
 | # | Dataset | Format | Size | Location |
 |---|---------|--------|------|----------|
-| 1 | **API Function Calls** | CSV (28,017 × 21,920) | 1.2 GB | `../dataset/API_Functions.csv` |
-| 2 | **DLL Imports** | CSV (28,016 × 631) | 37 MB | `../dataset/DLLs_Imported.csv` |
-| 3 | **PE Headers** | CSV (28,014 × 144) | 14 MB | `../dataset/portable_executable.csv` |
+| 1 | **API Function Calls** | CSV (28,017 x 21,920) | 1.2 GB | `../dataset/API_Functions.csv` |
+| 2 | **DLL Imports** | CSV (28,016 x 631) | 37 MB | `../dataset/DLLs_Imported.csv` |
+| 3 | **PE Headers** | CSV (28,014 x 144) | 14 MB | `../dataset/portable_executable.csv` |
 | 4 | **Test Set** | CSV (22,690 columns) | 68 MB | `../dataset/test.csv` |
 | 5 | **Suricata Logs** | NDJSON (eve.json) | 232 MB | `../suricata-logs/eve.json` |
 | 6 | **Phishing URLs** | HuggingFace dataset | Downloaded at runtime | `testpj/phishing-dataset` |
 | 7 | **Encrypted Traffic** | CSV (Mendeley) | User-provided | `../data/encrypted_traffic/` |
 | 8 | **PCAP Capture** | PCAP | 681 MB | `../2014-04-07_capture-win17.pcap` |
 
-> **Note:** Datasets 1–5 and 8 are already present in the project. Dataset 6 is auto-downloaded via the `datasets` library. Dataset 7 must be manually downloaded from [Mendeley](https://data.mendeley.com/datasets/xw7r4tt54g/1).
+> **Note:** Datasets 1-5 and 8 are already present in the project. Dataset 6 is auto-downloaded via the `datasets` library. Dataset 7 must be manually downloaded from [Mendeley](https://data.mendeley.com/datasets/xw7r4tt54g/1).
 
 ---
 
-## Installation & Setup
+## Installation and Setup
 
 ### Prerequisites
 
@@ -126,7 +126,7 @@ cd cyber_ai
 pip install -r requirements.txt
 ```
 
-### Required packages:
+### Required packages
 
 | Package | Purpose |
 |---------|---------|
@@ -158,7 +158,7 @@ export VT_API_KEY=your_api_key_here
 
 ## Quick Start
 
-### 1. Train Models & Run Full Pipeline
+### 1. Train Models and Run Full Pipeline
 
 ```bash
 python cyber_ai/main.py
@@ -211,28 +211,32 @@ alerts = parse_suricata_logs("path/to/eve.json", max_alerts=1000)
 ## Module Reference
 
 ### 1. Malware Detection
+
 **File:** `malware_detection/malware_model.py`
 
-Trains a **RandomForestClassifier** on merged real malware feature data (API calls + DLL imports + PE headers). The three CSVs are inner-joined on `SHA256`. Dimensionality reduction uses `VarianceThreshold(0.01)` → `PCA(200)` to handle 22,000+ features.
+Trains a **RandomForestClassifier** on merged real malware feature data (API calls + DLL imports + PE headers). The three CSVs are inner-joined on `SHA256`. Dimensionality reduction uses `VarianceThreshold(0.01)` followed by `PCA(200)` to handle 22,000+ features.
 
 **Key Functions:**
+
 | Function | Signature | Description |
 |----------|-----------|-------------|
-| `train_model()` | `(merged_df, n_components, n_estimators) → dict` | Train and evaluate the classifier |
-| `predict_malware()` | `(sample_features: np.ndarray) → np.ndarray` | Return class probability distribution |
-| `predict_malware_label()` | `(sample_features: np.ndarray) → list` | Return predicted class labels |
-| `load_saved_model()` | `() → bool` | Load from `saved_models/` directory |
+| `train_model()` | `(merged_df, n_components, n_estimators) -> dict` | Train and evaluate the classifier |
+| `predict_malware()` | `(sample_features: np.ndarray) -> np.ndarray` | Return class probability distribution |
+| `predict_malware_label()` | `(sample_features: np.ndarray) -> list` | Return predicted class labels |
+| `load_saved_model()` | `() -> bool` | Load from `saved_models/` directory |
 
-**Label Classes:** 7 malware types (0–6)
+**Label Classes:** 7 malware types (0-6)
 
 ---
 
 ### 2. Phishing URL Detector
+
 **File:** `phishing/url_detector.py`
 
 Extracts **14 lexical features** from URL strings and trains a RandomForest on the HuggingFace `testpj/phishing-dataset`.
 
 **Extracted Features:**
+
 1. URL length
 2. Dot count
 3. Slash count
@@ -249,6 +253,7 @@ Extracts **14 lexical features** from URL strings and trains a RandomForest on t
 14. Subdomain count
 
 **Key Function:**
+
 ```python
 predict_phishing(url_str: str) -> float  # 0.0 = legitimate, 1.0 = phishing
 ```
@@ -256,11 +261,13 @@ predict_phishing(url_str: str) -> float  # 0.0 = legitimate, 1.0 = phishing
 ---
 
 ### 3. Plaintext Classifier
+
 **File:** `firewall/plaintext_classifier.py`
 
-Uses **character-level TF-IDF** (3–5 char n-grams, up to 10,000 features) with a RandomForest to detect malicious plaintext payloads.
+Uses **character-level TF-IDF** (3-5 char n-grams, up to 10,000 features) with a RandomForest to detect malicious plaintext payloads.
 
 **Key Function:**
+
 ```python
 predict_plaintext(payload_str: str) -> float  # 0.0 = benign, 1.0 = malicious
 ```
@@ -268,20 +275,23 @@ predict_plaintext(payload_str: str) -> float  # 0.0 = benign, 1.0 = malicious
 ---
 
 ### 4. Encrypted Traffic CNN
+
 **File:** `firewall/encrypted_cnn.py`
 
 A **1D-CNN** in PyTorch for classifying encrypted network flows without decryption.
 
 **Architecture:**
+
 ```
-Conv1d(1, 32, k=3) → ReLU → MaxPool(2)
-Conv1d(32, 64, k=3) → ReLU → MaxPool(2)
-Conv1d(64, 128, k=3) → ReLU → AdaptiveAvgPool(1)
-FC(128, 64) → ReLU → Dropout(0.3)
+Conv1d(1, 32, k=3) -> ReLU -> MaxPool(2)
+Conv1d(32, 64, k=3) -> ReLU -> MaxPool(2)
+Conv1d(64, 128, k=3) -> ReLU -> AdaptiveAvgPool(1)
+FC(128, 64) -> ReLU -> Dropout(0.3)
 FC(64, num_classes)
 ```
 
 **Key Function:**
+
 ```python
 predict_encrypted_traffic(features: np.ndarray) -> float  # 0.0 = benign, 1.0 = malicious
 ```
@@ -291,6 +301,7 @@ predict_encrypted_traffic(features: np.ndarray) -> float  # 0.0 = benign, 1.0 = 
 ---
 
 ### 5. Flow Table
+
 **File:** `firewall/flow_table.py`
 
 In-memory flow state management keyed by 5-tuple `(src_ip, dest_ip, src_port, dest_port, protocol)`.
@@ -307,19 +318,20 @@ In-memory flow state management keyed by 5-tuple `(src_ip, dest_ip, src_port, de
 | `vt_score` | float | VirusTotal reputation |
 | `suricata_score` | float | IDS alert severity score |
 | `malware_score` | float | Malware classification score |
-| `risk_score` | float | Aggregate risk (0.0–1.0) |
+| `risk_score` | float | Aggregate risk (0.0-1.0) |
 | `decision` | str | Allow / Monitor / Block |
 
 ---
 
 ### 6. Risk Engine
+
 **File:** `risk_engine/risk_scoring.py`
 
 Computes a weighted composite risk score from all detection engines.
 
 ```
-risk_score = 0.3 × malware + 0.3 × encrypted + 0.2 × plaintext
-           + 0.1 × vt + 0.1 × suricata
+risk_score = 0.3 * malware + 0.3 * encrypted + 0.2 * plaintext
+           + 0.1 * vt + 0.1 * suricata
 ```
 
 Includes a `RiskEngine` class that can run as a background thread, sweeping all flows every 30 seconds to recompute scores.
@@ -327,6 +339,7 @@ Includes a `RiskEngine` class that can run as a background thread, sweeping all 
 ---
 
 ### 7. Zero Trust Access Control
+
 **File:** `zero_trust/access_control.py`
 
 Session-based access control with risk thresholds:
@@ -335,16 +348,18 @@ Session-based access control with risk thresholds:
 |-----------|----------|
 | > 0.85 | **Blocked** |
 | > 0.70 | **ReAuthentication Required** |
-| ≤ 0.70 | **Allowed** |
+| <= 0.70 | **Allowed** |
 
 Tracks risk history per session for auditing.
 
 ---
 
 ### 8. Incident Response
+
 **File:** `incident_response/response_engine.py`
 
 When a flow is blocked or flagged high-risk:
+
 1. **Block rule** is added to an in-memory blocklist
 2. **Forensic snapshot** is saved as a JSON file in `incidents/`
 3. **Event** is logged with timestamp and all score details
@@ -352,6 +367,7 @@ When a flow is blocked or flagged high-risk:
 ---
 
 ### 9. VirusTotal Integration
+
 **File:** `intelligence/virustotal.py`
 
 Real integration with the **VirusTotal v3 API**.
@@ -360,8 +376,8 @@ Real integration with the **VirusTotal v3 API**.
 |----------|----------|-------------|
 | `query_vt_hash(hash)` | `/api/v3/files/{id}` | File hash reputation (MD5/SHA1/SHA256) |
 | `query_vt_url(url)` | `/api/v3/urls/{id}` | URL reputation |
-| `safe_query_hash(hash)` | — | Graceful fallback (returns 0.0 if no API key) |
-| `safe_query_url(url)` | — | Graceful fallback |
+| `safe_query_hash(hash)` | N/A | Graceful fallback (returns 0.0 if no API key) |
+| `safe_query_url(url)` | N/A | Graceful fallback |
 
 **Features:**
 - LRU cache (256 entries) to avoid duplicate requests
@@ -371,6 +387,7 @@ Real integration with the **VirusTotal v3 API**.
 ---
 
 ### 10. Suricata Log Parser
+
 **File:** `intelligence/suricata_parser.py`
 
 Parses real **Suricata eve.json** (NDJSON format) and extracts structured `AlertRecord` objects.
@@ -382,9 +399,11 @@ Parses real **Suricata eve.json** (NDJSON format) and extracts structured `Alert
 ---
 
 ### 11. Orchestrator
+
 **File:** `main.py`
 
 End-to-end pipeline that:
+
 1. Trains/loads all ML models
 2. Parses Suricata logs
 3. Demonstrates VirusTotal integration
@@ -395,18 +414,19 @@ End-to-end pipeline that:
 ---
 
 ### 12. Streamlit Dashboard
+
 **File:** `dashboard/app.py`
 
 Interactive SOC dashboard with dark premium theme and 6 tabs:
 
 | Tab | Content |
 |-----|---------|
-| 📊 Active Flows | Flow table sorted by risk, risk distribution histogram |
-| 🚨 Suricata Alerts | Category bar chart, severity pie chart, alert table |
-| 🎣 Phishing Detection | Model predictions, interactive URL checker |
-| 🦠 Malware Detection | Model status, class information |
-| 🔎 VirusTotal | API status, interactive URL/hash lookup |
-| 🚫 Blocked / Incidents | Blocked flows table, incident log |
+| Active Flows | Flow table sorted by risk, risk distribution histogram |
+| Suricata Alerts | Category bar chart, severity pie chart, alert table |
+| Phishing Detection | Model predictions, interactive URL checker |
+| Malware Detection | Model status, class information |
+| VirusTotal | API status, interactive URL/hash lookup |
+| Blocked / Incidents | Blocked flows table, incident log |
 
 **Features:**
 - Auto-refresh every 5 seconds
@@ -418,29 +438,29 @@ Interactive SOC dashboard with dark premium theme and 6 tabs:
 ## Risk Scoring Formula
 
 ```
-risk_score = 0.3 × malware_score
-           + 0.3 × encrypted_score
-           + 0.2 × plaintext_score
-           + 0.1 × vt_score
-           + 0.1 × suricata_score
+risk_score = 0.3 * malware_score
+           + 0.3 * encrypted_score
+           + 0.2 * plaintext_score
+           + 0.1 * vt_score
+           + 0.1 * suricata_score
 ```
 
 All component scores are clamped to `[0.0, 1.0]`. The output is a single float in `[0.0, 1.0]`.
 
 **Risk Classification:**
 
-| Score Range | Level | Color |
-|------------|-------|-------|
-| > 0.85 | 🔴 Critical | Red |
-| > 0.70 | 🟠 High | Orange |
-| > 0.40 | 🟡 Medium | Yellow |
-| ≤ 0.40 | 🟢 Low | Green |
+| Score Range | Level |
+|------------|-------|
+| > 0.85 | Critical |
+| > 0.70 | High |
+| > 0.40 | Medium |
+| <= 0.40 | Low |
 
 ---
 
 ## Zero Trust Policy
 
-```
+```python
 if risk_score > 0.85:
     decision = "Blocked"
 elif risk_score > 0.70:
@@ -458,37 +478,42 @@ else:
 ```python
 # Malware detection
 from cyber_ai.malware_detection.malware_model import predict_malware
-probabilities = predict_malware(features_array)  # → np.ndarray (n_samples, n_classes)
+probabilities = predict_malware(features_array)  # returns np.ndarray (n_samples, n_classes)
 
 # Phishing detection
 from cyber_ai.phishing.url_detector import predict_phishing
-score = predict_phishing("http://example.com")  # → float
+score = predict_phishing("http://example.com")  # returns float
 
 # Plaintext classification
 from cyber_ai.firewall.plaintext_classifier import predict_plaintext
-score = predict_plaintext("GET /admin/login.php")  # → float
+score = predict_plaintext("GET /admin/login.php")  # returns float
 
 # Encrypted traffic
 from cyber_ai.firewall.encrypted_cnn import predict_encrypted_traffic
-score = predict_encrypted_traffic(flow_features)  # → float
+score = predict_encrypted_traffic(flow_features)  # returns float
 
 # Risk scoring
 from cyber_ai.risk_engine.risk_scoring import compute_risk_score
-risk = compute_risk_score(malware=0.8, encrypted=0.5,
-                          plaintext=0.3, vt=0.6, suricata=0.9)  # → float
+risk = compute_risk_score(
+    malware_score=0.8,
+    encrypted_score=0.5,
+    plaintext_score=0.3,
+    vt_score=0.6,
+    suricata_score=0.9
+)  # returns float
 
 # Zero trust
 from cyber_ai.zero_trust.access_control import evaluate_session
-decision = evaluate_session("session_123", risk_score=0.82)  # → str
+decision = evaluate_session("session_123", risk_score=0.82)  # returns str
 
 # VirusTotal
 from cyber_ai.intelligence.virustotal import safe_query_hash, safe_query_url
-vt_score = safe_query_hash("sha256_hash_here")  # → float
-vt_url_score = safe_query_url("http://example.com")  # → float
+vt_score = safe_query_hash("sha256_hash_here")  # returns float
+vt_url_score = safe_query_url("http://example.com")  # returns float
 
 # Suricata
 from cyber_ai.intelligence.suricata_parser import parse_suricata_logs
-alerts = parse_suricata_logs("eve.json", max_alerts=5000)  # → List[AlertRecord]
+alerts = parse_suricata_logs("eve.json", max_alerts=5000)  # returns List[AlertRecord]
 ```
 
 ---
@@ -501,20 +526,20 @@ Trained models are automatically saved to `saved_models/` directories within eac
 
 ```
 malware_detection/saved_models/
-  ├── malware_rf_model.joblib
-  ├── malware_pipeline.joblib
-  └── malware_label_encoder.joblib
+  malware_rf_model.joblib
+  malware_pipeline.joblib
+  malware_label_encoder.joblib
 
 phishing/saved_models/
-  ├── phishing_rf_model.joblib
-  └── phishing_scaler.joblib
+  phishing_rf_model.joblib
+  phishing_scaler.joblib
 
 firewall/saved_models/
-  ├── plaintext_rf_model.joblib
-  ├── plaintext_tfidf.joblib
-  ├── encrypted_cnn_model.pth
-  ├── encrypted_scaler.joblib
-  └── encrypted_cnn_config.joblib
+  plaintext_rf_model.joblib
+  plaintext_tfidf.joblib
+  encrypted_cnn_model.pth
+  encrypted_scaler.joblib
+  encrypted_cnn_config.joblib
 ```
 
 On subsequent runs, models are loaded from disk instead of retraining.
@@ -545,45 +570,45 @@ Forensic snapshots are saved as JSON files to `cyber_ai/incidents/`:
 
 ```
 cyber_ai/
-├── README.md                              ← You are here
-├── requirements.txt                       ← Python dependencies
+├── README.md
+├── requirements.txt
 ├── __init__.py
-├── main.py                                ← End-to-end orchestrator
+├── main.py
 │
 ├── malware_detection/
 │   ├── __init__.py
-│   └── malware_model.py                   ← RandomForest malware classifier
+│   └── malware_model.py
 │
 ├── phishing/
 │   ├── __init__.py
-│   └── url_detector.py                    ← Phishing URL detector
+│   └── url_detector.py
 │
 ├── firewall/
 │   ├── __init__.py
-│   ├── flow_table.py                      ← Flow state management
-│   ├── plaintext_classifier.py            ← TF-IDF payload classifier
-│   └── encrypted_cnn.py                   ← 1D-CNN encrypted traffic classifier
+│   ├── flow_table.py
+│   ├── plaintext_classifier.py
+│   └── encrypted_cnn.py
 │
 ├── intelligence/
 │   ├── __init__.py
-│   ├── virustotal.py                      ← VirusTotal v3 API
-│   └── suricata_parser.py                 ← Suricata eve.json parser
+│   ├── virustotal.py
+│   └── suricata_parser.py
 │
 ├── risk_engine/
 │   ├── __init__.py
-│   └── risk_scoring.py                    ← Weighted risk computation
+│   └── risk_scoring.py
 │
 ├── zero_trust/
 │   ├── __init__.py
-│   └── access_control.py                  ← Session-based zero trust
+│   └── access_control.py
 │
 ├── incident_response/
 │   ├── __init__.py
-│   └── response_engine.py                 ← Block rules + forensic snapshots
+│   └── response_engine.py
 │
 └── dashboard/
     ├── __init__.py
-    └── app.py                             ← Streamlit SOC dashboard
+    └── app.py
 ```
 
 ---
@@ -592,10 +617,10 @@ cyber_ai/
 
 The encrypted traffic classification CNN is informed by the following research:
 
-1. **PacketCGAN** — Class imbalance for encrypted traffic classification using CNN. [arXiv:1911.12046](https://arxiv.org/abs/1911.12046)
-2. **AI-Based Network Traffic Classification** — CNN + LSTM for encrypted/obfuscated data (2025). [DOI:10.63075/4bth0029](https://doi.org/10.63075/4bth0029)
-3. **Deep Learning for Encrypted Traffic** — DNN including CNN layers for encrypted flow classification. Sensors 2022, 22(19):7643.
-4. **Autoencoder + CNN** — Combining autoencoders with CNNs for robust encrypted traffic analysis. [PubMed:40991620](https://pubmed.ncbi.nlm.nih.gov/40991620)
+1. **PacketCGAN** - Class imbalance for encrypted traffic classification using CNN. [arXiv:1911.12046](https://arxiv.org/abs/1911.12046)
+2. **AI-Based Network Traffic Classification** - CNN + LSTM for encrypted/obfuscated data (2025). [DOI:10.63075/4bth0029](https://doi.org/10.63075/4bth0029)
+3. **Deep Learning for Encrypted Traffic** - DNN including CNN layers for encrypted flow classification. Sensors 2022, 22(19):7643.
+4. **Autoencoder + CNN** - Combining autoencoders with CNNs for robust encrypted traffic analysis. [PubMed:40991620](https://pubmed.ncbi.nlm.nih.gov/40991620)
 
 ---
 
@@ -606,6 +631,5 @@ This project is built for educational and research purposes as part of the India
 ---
 
 <p align="center">
-  Built with ❤️ using Python, scikit-learn, PyTorch, Streamlit, and real-world security data.
+  Built with Python, scikit-learn, PyTorch, Streamlit, and real-world security data.
 </p>
-]]>
