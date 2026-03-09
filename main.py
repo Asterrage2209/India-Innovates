@@ -6,6 +6,7 @@ Loads/trains all models, parses Suricata logs, demonstrates the full pipeline:
 
 import os
 import sys
+import gc
 import time
 import numpy as np
 from pathlib import Path
@@ -268,26 +269,85 @@ def main():
     print(f"Project root: {PROJECT_ROOT}")
     print(f"Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
 
+    # Pre-import torch and datasets BEFORE heavy memory usage
+    # This ensures the DLL is loaded while memory is available
+    print("Pre-loading libraries...")
+    try:
+        import torch
+        print(f"  PyTorch {torch.__version__} loaded")
+    except Exception as e:
+        print(f"  PyTorch not available: {e}")
+    try:
+        import datasets as _ds
+        print(f"  HuggingFace datasets loaded")
+    except Exception as e:
+        print(f"  datasets library not available: {e}")
+
+    errors = []
+
     # Phase 1: Train/load ML models
-    run_malware_training()
-    run_phishing_training()
-    run_plaintext_training()
-    run_encrypted_cnn()
+    try:
+        run_malware_training()
+    except Exception as e:
+        print(f"\n[ERROR] Malware training failed: {e}")
+        errors.append(("Malware Detection", str(e)))
+
+    # Free memory from malware training before next phases
+    gc.collect()
+
+    try:
+        run_phishing_training()
+    except Exception as e:
+        print(f"\n[ERROR] Phishing training failed: {e}")
+        errors.append(("Phishing Detector", str(e)))
+
+    try:
+        run_plaintext_training()
+    except Exception as e:
+        print(f"\n[ERROR] Plaintext training failed: {e}")
+        errors.append(("Plaintext Classifier", str(e)))
+
+    try:
+        run_encrypted_cnn()
+    except Exception as e:
+        print(f"\n[ERROR] Encrypted CNN failed: {e}")
+        errors.append(("Encrypted CNN", str(e)))
 
     # Phase 2: Parse Suricata logs
-    alerts, suricata_global_score = run_suricata_analysis()
+    alerts = []
+    try:
+        alerts, suricata_global_score = run_suricata_analysis()
+    except Exception as e:
+        print(f"\n[ERROR] Suricata analysis failed: {e}")
+        errors.append(("Suricata Parser", str(e)))
 
     # Phase 3: VirusTotal
-    run_vt_demo()
+    try:
+        run_vt_demo()
+    except Exception as e:
+        print(f"\n[ERROR] VirusTotal demo failed: {e}")
+        errors.append(("VirusTotal", str(e)))
 
     # Phase 4: Flow simulation with real data
     if alerts:
-        run_flow_simulation(alerts)
+        try:
+            run_flow_simulation(alerts)
+        except Exception as e:
+            print(f"\n[ERROR] Flow simulation failed: {e}")
+            errors.append(("Flow Simulation", str(e)))
 
-    # Done
+    # Summary
     print_header("SYSTEM READY")
-    print("All modules initialized. Run the Streamlit dashboard:")
-    print(f"  streamlit run {Path(__file__).resolve().parent / 'dashboard' / 'app.py'}")
+    if errors:
+        print(f"Completed with {len(errors)} error(s):")
+        for module, err in errors:
+            print(f"  [FAILED] {module}: {err}")
+        print()
+    else:
+        print("All modules initialized successfully!")
+
+    print("Run the Streamlit dashboard:")
+    print(f"  python -m streamlit run {Path(__file__).resolve().parent / 'dashboard' / 'app.py'}")
 
 
 if __name__ == "__main__":

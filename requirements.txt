@@ -9,3 +9,4 @@ datasets>=2.16
 matplotlib>=3.7
 seaborn>=0.13
 plotly>=5.18
+python-dotenv>=1.0

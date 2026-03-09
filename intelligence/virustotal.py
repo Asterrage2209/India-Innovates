@@ -1,7 +1,7 @@
 """
 intelligence/virustotal.py
 Real VirusTotal v3 API integration for file hash and URL reputation lookups.
-Reads VT_API_KEY from environment. Respects rate limits. Caches results.
+Reads VT_API_KEY from .env file or environment variable. Respects rate limits. Caches results.
 """
 
 import os
@@ -9,8 +9,26 @@ import time
 import base64
 import hashlib
 import requests
+from pathlib import Path
 from functools import lru_cache
 from typing import Optional, Dict, Any
+
+# ── Load .env file ─────────────────────────────────────────────────────────────
+# Search for .env in the cyber_ai directory and project root
+try:
+    from dotenv import load_dotenv
+    _module_dir = Path(__file__).resolve().parent
+    # Try cyber_ai/.env first, then project root/.env
+    for _env_path in [
+        _module_dir.parent / ".env",          # cyber_ai/.env
+        _module_dir.parent.parent / ".env",   # project root/.env
+    ]:
+        if _env_path.exists():
+            load_dotenv(_env_path, override=True)
+            print(f"[VirusTotal] Loaded API key from {_env_path}")
+            break
+except ImportError:
+    pass  # python-dotenv not installed — fall back to os.environ
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 VT_BASE_URL = "https://www.virustotal.com/api/v3"

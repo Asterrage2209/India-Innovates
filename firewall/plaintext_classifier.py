@@ -46,11 +46,18 @@ def train_model(max_samples: int = 80000, save: bool = True) -> dict:
 
     from datasets import load_dataset
 
-    print("[PlaintextClassifier] Loading HuggingFace dataset...")
-    dataset = load_dataset("testpj/phishing-dataset", split="train")
+    print("[PlaintextClassifier] Loading HuggingFace dataset 'pirocheto/phishing-url'...")
+    try:
+        train_ds = load_dataset("pirocheto/phishing-url", split="train")
+        test_ds = load_dataset("pirocheto/phishing-url", split="test")
+        from datasets import concatenate_datasets
+        dataset = concatenate_datasets([train_ds, test_ds])
+    except Exception:
+        dataset = load_dataset("pirocheto/phishing-url", split="train")
 
     urls = dataset["url"]
-    labels = dataset["label"]
+    raw_labels = dataset["status"]
+    labels = [1 if str(lbl).lower() == "phishing" else 0 for lbl in raw_labels]
 
     # Sample if needed
     if len(urls) > max_samples:

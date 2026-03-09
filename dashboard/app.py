@@ -451,9 +451,22 @@ def render_vt_panel():
         st.code("set VT_API_KEY=your_api_key_here", language="shell")
 
 
+@st.cache_data(ttl=300)
+def load_malware_test_predictions():
+    """Load cached malware test.csv predictions."""
+    try:
+        from cyber_ai.malware_detection.malware_model import predict_test_csv, load_saved_model
+        if not load_saved_model():
+            return None
+        return predict_test_csv(max_samples=5000)  # Cap for dashboard speed
+    except Exception as e:
+        print(f"[Dashboard] Malware test prediction error: {e}")
+        return None
+
+
 def render_malware_panel():
-    """Render malware detection results."""
-    st.subheader("🦠 Malware Detection")
+    """Render malware detection results from test.csv."""
+    st.subheader("🦠 Malware Detection — test.csv Analysis")
 
     try:
         from cyber_ai.malware_detection.malware_model import get_model_info, load_saved_model
@@ -462,15 +475,94 @@ def render_malware_panel():
             return
 
         info = get_model_info()
+
+        # Model info row
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Status", info["status"].title())
+            st.metric("Model Status", info["status"].title())
         with col2:
             st.metric("Classes", info.get("n_classes", "N/A"))
         with col3:
             st.metric("Estimators", info.get("n_estimators", "N/A"))
 
         st.markdown(f"**Class names**: {', '.join(str(c) for c in info.get('class_names', []))}")
+        st.divider()
+
+        # Load test.csv predictions
+        st.markdown("### 📊 test.csv Predictions")
+        results_df = load_malware_test_predictions()
+
+        if results_df is None or results_df.empty:
+            st.warning("Could not load test.csv predictions. Ensure test.csv exists in the dataset folder and models are trained.")
+            return
+
+        # Summary metrics
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Total Samples", f"{len(results_df):,}")
+        with col2:
+            st.metric("Avg Confidence", f"{results_df['Confidence'].mean():.2%}")
+        with col3:
+            high_conf = (results_df['Confidence'] >= 0.8).sum()
+            st.metric("High Confidence", f"{high_conf:,}")
+        with col4:
+            n_types = results_df["Predicted_Label"].nunique()
+            st.metric("Types Detected", n_types)
+
+        # Charts row
+        chart_col1, chart_col2 = st.columns(2)
+
+        with chart_col1:
+            # Malware type distribution pie chart
+            dist = results_df["Predicted_Label"].value_counts().reset_index()
+            dist.columns = ["Malware Type", "Count"]
+            fig = px.pie(
+                dist, values="Count", names="Malware Type",
+                title="Prediction Distribution by Malware Type",
+                color_discrete_sequence=px.colors.qualitative.Set2,
+            )
+            fig.update_layout(
+                template="plotly_dark",
+                height=350,
+                margin=dict(l=20, r=20, t=40, b=20),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        with chart_col2:
+            # Confidence distribution histogram
+            fig = go.Figure()
+            fig.add_trace(go.Histogram(
+                x=results_df["Confidence"],
+                nbinsx=40,
+                marker_color="#e94560",
+                opacity=0.8,
+            ))
+            fig.update_layout(
+                title="Confidence Score Distribution",
+                xaxis_title="Confidence",
+                yaxis_title="Count",
+                template="plotly_dark",
+                height=350,
+                margin=dict(l=20, r=20, t=40, b=20),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        # Results table
+        st.markdown("### 📋 Detection Results")
+        # Add filter
+        filter_type = st.selectbox(
+            "Filter by Malware Type:",
+            ["All"] + sorted(results_df["Predicted_Label"].unique().astype(str).tolist()),
+        )
+        display_df = results_df if filter_type == "All" else results_df[
+            results_df["Predicted_Label"].astype(str) == filter_type
+        ]
+
+        st.dataframe(
+            display_df.head(200),
+            use_container_width=True,
+            height=400,
+        )
 
     except Exception as e:
         st.warning(f"Malware module: {e}")
